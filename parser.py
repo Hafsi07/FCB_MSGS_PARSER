@@ -1,16 +1,14 @@
 import json
 import os 
 
-wd=''
 
-with open("message_1.json", 'r') as f:
+
+with open("message_1.json", 'r', encoding='ascii') as f:
     data=json.load(f)
 
 
 recipiants=data.get('participants',None)
 
-# print(recipiants[0]['name'])
-# exit()
 def get_messages(data):
     
     messages=[]
@@ -24,19 +22,33 @@ def get_messages(data):
                 for rec in recipiants:
                     x=x.replace(f"@{rec['name']}",'').strip().replace('  ',' ')
 
-            if x.endswith('to your message '): 
-                print('valid')
+            if x.strip().endswith('to your message'): 
+                print('reaction')
                 continue
-
+            if x.strip().endswith('sent an attachment.'): 
+                print('attachment')
+                continue
+            if x.startswith('https://') or x.startswith('http://'):
+                print('link')
+                continue
+            
             if x != '': messages.append(x)
     return messages
 
-res= get_messages(data)
-print(res)
-print(len(res))
-# print(data['messages'][1]['content'])
+
 
 # @ + recipienets names  exclustion  from emssages
 # links and special characters exclusion
-
-
+def file_loader(wd=os.getcwd()):
+    text=[]
+    for filename in os.listdir(wd):
+        fp = os.path.join(wd, filename)
+        if os.path.isfile(fp) and fp.endswith('.json'):
+            with open(fp,'r') as f :
+                data=json.load(f)
+            text=text+['------']+get_messages(data)
+        else: continue
+    return text
+cc=file_loader()
+print(cc)
+print(len(cc))
