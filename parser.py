@@ -1,19 +1,16 @@
 import json
-import os 
+import os
 
 
-
-with open("message_1.json", 'r', encoding='ascii') as f:
-    data=json.load(f)
-
-
-recipiants=data.get('participants',None)
-
-def get_messages(data):
-    
+def get_messages(data,participants_to_exclude=[]):
+        
+    recipiants=data.get('participants',None)
     messages=[]
 
     for i in data['messages']:
+        sender=i.get('sender_name',None)
+        if sender in participants_to_exclude:
+            continue
         x=i.get('content',None)
         if x:
             if x.find('@')>=0:
@@ -28,6 +25,12 @@ def get_messages(data):
             if x.strip().endswith('sent an attachment.'): 
                 print('attachment')
                 continue
+            if x.strip().endswith('from the group.'): 
+                print('kick')
+                continue
+            if x.strip().endswith('left the group.'): 
+                print('leave')
+                continue
             if x.startswith('https://') or x.startswith('http://'):
                 print('link')
                 continue
@@ -36,9 +39,6 @@ def get_messages(data):
     return messages
 
 
-
-# @ + recipienets names  exclustion  from emssages
-# links and special characters exclusion
 def file_loader(wd=os.getcwd()):
     text=[]
     for filename in os.listdir(wd):
@@ -46,7 +46,7 @@ def file_loader(wd=os.getcwd()):
         if os.path.isfile(fp) and fp.endswith('.json'):
             with open(fp,'r') as f :
                 data=json.load(f)
-            text=text+['------']+get_messages(data)
+            text=text+['------']+get_messages(data,['Participants to remove'])
         else: continue
     return text
 cc=file_loader()
