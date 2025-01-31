@@ -2,18 +2,29 @@ import json
 import os
 
 
+def create_id(jizon):
+    particips=jizon.get('participants',None)
+    particips=[i['name'].strip() for i in particips]
+    strng=''.join(particips)
+    id=strng[:2]+str(hex(len(strng)))+strng[-3:]+strng[:3]+str(hex(2*len(strng)))+strng[-2:]
+    return id
+
 def get_messages(data,participants_to_exclude=[],participants_to_include=[]):
         
     recipiants=data.get('participants',None)
     if participants_to_include==[]: participants_to_include=recipiants
     participants_to_include=[i for i in participants_to_include if i not in participants_to_exclude]
 
-    messages=[]
+    conversation_ID=create_id(data)
+
+    messages=[]    
     for i in data['messages']:
         sender=i.get('sender_name',None)
         if sender in participants_to_exclude or sender not in participants_to_include:continue
             
         x=i.get('content',None)
+        y=i.get('timestamp_ms',None)
+        z=i.get('sender_name',None)
         if x:
             if x.find('@')>=0:
                 x=x.replace('@everyone','').strip().replace('  ',' ')
@@ -37,12 +48,16 @@ def get_messages(data,participants_to_exclude=[],participants_to_include=[]):
                 print('link')
                 continue
             
-            if x != '': messages.append(x)
+            if x != '': messages.append([x,y,z,conversation_ID])
     return messages
 
 
 def file_loader(wd=os.getcwd(),participants_to_remove=[],participants_to_include=[]):
     text=[]
+    if wd.endswith('.json'):
+        with open(wd,'r') as f :
+            data=json.load(f)
+        return get_messages(data,participants_to_remove,participants_to_include)
     for filename in os.listdir(wd):
         fp = os.path.join(wd, filename)
         if os.path.isfile(fp) and fp.endswith('.json'):
@@ -51,9 +66,12 @@ def file_loader(wd=os.getcwd(),participants_to_remove=[],participants_to_include
             text=text+['------']+get_messages(data,participants_to_remove,participants_to_include)
         else: continue
     return text
-cc=file_loader(participants_to_include=['Hafsi Youssef'])
-print(cc)
+cc=file_loader(wd='C:\\Users\\utente\Documents\\NLP_TUNSI\\NLP_TOUNSI\\data\\message_1.json',participants_to_include=['Hafsi Youssef'])
+print(cc[-3:])
 print(len(cc))
+
+# classify text emotion for sentiment analysis
+# add reactions 
 
 
 # add timestamp and conversation ID to the parsed data
