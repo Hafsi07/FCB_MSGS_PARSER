@@ -12,6 +12,7 @@ def create_id(jizon):
 def get_messages(data,participants_to_exclude=[],participants_to_include=[]):
         
     recipiants=data.get('participants',None)
+    recipiants=[i['name'].strip() for i in recipiants]
     if participants_to_include==[]: participants_to_include=recipiants
     participants_to_include=[i for i in participants_to_include if i not in participants_to_exclude]
 
@@ -20,7 +21,8 @@ def get_messages(data,participants_to_exclude=[],participants_to_include=[]):
     messages=[]    
     for i in data['messages']:
         sender=i.get('sender_name',None)
-        if sender in participants_to_exclude or sender not in participants_to_include:continue
+        if sender in participants_to_exclude or sender not in participants_to_include:
+            continue
             
         x=i.get('content',None)
         y=i.get('timestamp_ms',None)
@@ -30,7 +32,7 @@ def get_messages(data,participants_to_exclude=[],participants_to_include=[]):
                 x=x.replace('@everyone','').strip().replace('  ',' ')
                 x=x.replace('@Meta Ai','').strip().replace('  ',' ')
                 for rec in recipiants:
-                    x=x.replace(f"@{rec['name']}",'').strip().replace('  ',' ')
+                    x=x.replace(f"@{rec}",'').strip().replace('  ',' ')
 
             if x.strip().endswith('to your message'): 
                 print('reaction')
@@ -66,7 +68,7 @@ def file_loader(wd=os.getcwd(),participants_to_remove=[],participants_to_include
             text=text+['------']+get_messages(data,participants_to_remove,participants_to_include)
         else: continue
     return text
-cc=file_loader(wd='C:\\Users\\utente\Documents\\NLP_TUNSI\\NLP_TOUNSI\\data\\message_1.json',participants_to_include=['Hafsi Youssef'])
+cc=file_loader(participants_to_remove=['Hafsi Youssef','Zied Ben Zineb'],participants_to_include=['Ghassen Mili','Abdallah Amine','Hafsi Youssef'])
 print(cc[-3:])
 print(len(cc))
 
