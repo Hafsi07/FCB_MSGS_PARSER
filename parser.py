@@ -27,6 +27,12 @@ def get_messages(data,participants_to_exclude=[],participants_to_include=[]):
         x=i.get('content',None)
         y=i.get('timestamp_ms',None)
         z=i.get('sender_name',None)
+        w=i.get('reactions',None)
+        if w:
+            w=[str(i['reaction']) for i in w]
+            print(w)
+        else: w=[None]
+
         if x:
             if x.find('@')>=0:
                 x=x.replace('@everyone','').strip().replace('  ',' ')
@@ -50,7 +56,7 @@ def get_messages(data,participants_to_exclude=[],participants_to_include=[]):
                 print('link')
                 continue
             
-            if x != '': messages.append([x,y,z,conversation_ID])
+            if x != '': messages.append([conversation_ID,x,y,z,w])
     return messages
 
 
