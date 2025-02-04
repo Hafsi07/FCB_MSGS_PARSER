@@ -74,13 +74,6 @@ def file_loader(wd=os.getcwd(),participants_to_remove=[],participants_to_include
             text=text+['------']+get_messages(data,participants_to_remove,participants_to_include)
         else: continue
     return text
-cc=file_loader(participants_to_remove=['Hafsi Youssef','Zied Ben Zineb'],participants_to_include=['Ghassen Mili','Abdallah Amine','Hafsi Youssef'])
+cc=file_loader(participants_to_remove=['x1','x2'],participants_to_include=['x3','x5','x8','x2'])
 print(cc[-3:])
 print(len(cc))
-
-# classify text emotion for sentiment analysis
-# add reactions 
-
-
-# add timestamp and conversation ID to the parsed data
-# create a java application to give options to users to choose who to exclude and who to include and conversations from when to where 
